@@ -1,0 +1,1267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mastering R and RStudio: Starter to Advanced</title>
+  <style>
+    :root {
+      --bg: #0b1120;
+      --surface: #1e293b;
+      --surface-light: #334155;
+      --border: rgba(255, 255, 255, 0.12);
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --accent: #8b5cf6;
+      --code-bg: #030712;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background: rgba(30, 41, 59, 0.95);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .badge-logo {
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      color: white;
+      font-weight: 800;
+      font-size: 1.25rem;
+      width: 38px;
+      height: 38px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
+    }
+    .brand-title { font-size: 0.95rem; font-weight: 700; color: #fff; }
+    .brand-subtitle { font-size: 0.75rem; color: var(--text-muted); }
+
+    .nav-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    button {
+      background: var(--surface);
+      color: var(--text);
+      border: 1px solid var(--border);
+      padding: 7px 14px;
+      border-radius: 6px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+      user-select: none;
+    }
+    button:hover:not(:disabled) {
+      background: var(--surface-light);
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+    button:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+    button.primary {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: white;
+    }
+    button.primary:hover:not(:disabled) {
+      background: var(--primary-hover);
+    }
+
+    .counter-pill {
+      font-family: monospace;
+      font-size: 0.82rem;
+      color: #cbd5e1;
+      padding: 5px 10px;
+      background: rgba(0,0,0,0.4);
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      font-weight: bold;
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.08);
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+      width: 5.5%;
+      transition: width 0.25s ease;
+    }
+
+    main {
+      flex: 1;
+      max-width: 1100px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 28px 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    /* SLIDE CARD STYLING */
+    .slide-card {
+      display: none; /* In slide mode, only active slide is shown */
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 34px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+      flex-direction: column;
+      min-height: 540px;
+      animation: fadeIn 0.2s ease-out;
+    }
+    .slide-card.active {
+      display: flex;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .pill {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 4px 10px;
+      border-radius: 9999px;
+      margin-bottom: 12px;
+      width: fit-content;
+    }
+    .pill-starter { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+    .pill-intermediate { background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3); }
+    .pill-advanced { background: rgba(139, 92, 246, 0.15); color: #a78bfa; border: 1px solid rgba(139, 92, 246, 0.3); }
+    .pill-summary { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
+
+    .slide-title {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 6px;
+      line-height: 1.25;
+    }
+    .slide-subtitle {
+      font-size: 0.92rem;
+      color: var(--text-muted);
+      margin-bottom: 22px;
+    }
+
+    .slide-body {
+      flex: 1;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+    .grid-5 {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+    }
+
+    @media (max-width: 820px) {
+      .grid-2, .grid-3, .grid-5 { grid-template-columns: 1fr; }
+      .slide-card { padding: 20px; min-height: auto; }
+      .slide-title { font-size: 1.35rem; }
+    }
+
+    .panel {
+      background: rgba(15, 23, 42, 0.65);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+    }
+    .panel-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .panel p, .panel li {
+      font-size: 0.84rem;
+      color: #cbd5e1;
+      line-height: 1.6;
+    }
+    .panel ul {
+      padding-left: 18px;
+    }
+
+    pre, code {
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+    }
+    .code-box {
+      background: var(--code-bg);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      padding: 13px;
+      color: #38bdf8;
+      font-size: 0.82rem;
+      overflow-x: auto;
+      margin-top: 8px;
+      line-height: 1.5;
+    }
+    .code-comment { color: #64748b; }
+    .code-kw { color: #f43f5e; font-weight: 600; }
+    .code-str { color: #a3e635; }
+    .code-fn { color: #818cf8; }
+    .code-num { color: #fb923c; }
+
+    .tip-box {
+      background: rgba(59, 130, 246, 0.1);
+      border: 1px solid rgba(59, 130, 246, 0.25);
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: 0.82rem;
+      color: #93c5fd;
+      margin-top: 16px;
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+
+    footer {
+      border-top: 1px solid var(--border);
+      background: rgba(15, 23, 42, 0.9);
+      padding: 12px 24px;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .shortcuts-help {
+      display: flex;
+      gap: 16px;
+    }
+    kbd {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 4px;
+      padding: 2px 6px;
+      font-size: 0.75rem;
+      font-family: monospace;
+      color: #fff;
+    }
+
+    /* Modal Backdrop */
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(4px);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .modal-backdrop.active { display: flex; }
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      max-width: 650px;
+      width: 100%;
+      max-height: 80vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+    }
+    .modal-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .modal-body {
+      padding: 16px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .toc-item {
+      padding: 10px 14px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: rgba(15, 23, 42, 0.5);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: all 0.15s ease;
+    }
+    .toc-item:hover {
+      background: var(--surface-light);
+      border-color: rgba(255,255,255,0.3);
+    }
+
+    /* Scroll Mode: Show all slides */
+    body.scroll-mode .slide-card {
+      display: flex !important;
+      margin-bottom: 28px;
+      min-height: auto;
+    }
+    body.scroll-mode .hide-in-scroll {
+      display: none !important;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div class="brand">
+      <div class="badge-logo">R</div>
+      <div>
+        <div class="brand-title">R & RStudio Masterclass</div>
+        <div class="brand-subtitle">Starter → Intermediate → Advanced</div>
+      </div>
+    </div>
+
+    <div class="nav-controls">
+      <button id="viewModeBtn" onclick="toggleViewMode()" title="Toggle continuous scroll view">
+        📄 <span id="viewModeText">Scroll View</span>
+      </button>
+      <button id="tocBtn" onclick="openModal()">
+        📑 Index
+      </button>
+      <span class="counter-pill hide-in-scroll" id="slideNum">1 / 18</span>
+      <button id="prevBtn" class="hide-in-scroll" onclick="prevSlide()" title="Previous slide (Left Arrow)">◀ Prev</button>
+      <button id="nextBtn" class="primary hide-in-scroll" onclick="nextSlide()" title="Next slide (Right Arrow or Space)">Next ▶</button>
+    </div>
+  </header>
+
+  <!-- PROGRESS TRACK -->
+  <div class="progress-track hide-in-scroll">
+    <div class="progress-fill" id="progressFill"></div>
+  </div>
+
+  <!-- MAIN SLIDES CONTAINER (ALL 18 SLIDES AS STATIC DOM NODES) -->
+  <main id="mainContainer">
+
+    <!-- SLIDE 1 -->
+    <div class="slide-card active" data-index="0" data-category="Module 1 • Starter Essentials">
+      <span class="pill pill-starter">Module 1 • Starter</span>
+      <h2 class="slide-title">1. Welcome & Course Roadmap</h2>
+      <div class="slide-subtitle">From your very first line of code to high-performance production R</div>
+      <div class="slide-body">
+        <div style="text-align: center; padding: 10px 0 20px 0;">
+          <p style="font-size: 1.05rem; color: #cbd5e1; max-width: 680px; margin: 0 auto 24px auto;">
+            Welcome! This complete course teaches you how to think, write, and analyze data using modern R and RStudio.
+          </p>
+          <div class="grid-3" style="text-align: left;">
+            <div class="panel">
+              <div class="panel-title" style="color: #34d399;">Level 1 • Starter</div>
+              <p><strong>Foundations:</strong> RStudio 4 quadrants, projects, vectors, 1-based indexing, data types, and data frames.</p>
+            </div>
+            <div class="panel">
+              <div class="panel-title" style="color: #60a5fa;">Level 2 • Intermediate</div>
+              <p><strong>Data Wrangling:</strong> The native pipe (<code style="color:#60a5fa;">|&gt;</code>), 5 core dplyr verbs, tidyr reshaping, and ggplot2 visual graphics.</p>
+            </div>
+            <div class="panel">
+              <div class="panel-title" style="color: #a78bfa;">Level 3 • Advanced</div>
+              <p><strong>Production & Scale:</strong> purrr functional programming, data.table for multi-GB data, rlang metaprogramming, C++ with Rcpp, and Quarto.</p>
+            </div>
+          </div>
+          <div class="tip-box" style="margin-top: 24px; text-align: left;">
+            <span>💡</span>
+            <div>Click <strong>Next ▶</strong> or press <kbd>→</kbd> / <kbd>Space</kbd> on your keyboard to navigate. You can also click <strong>Scroll View</strong> to see all slides together!</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 2 -->
+    <div class="slide-card" data-index="1" data-category="Module 1 • Starter Essentials">
+      <span class="pill pill-starter">Module 1 • Starter</span>
+      <h2 class="slide-title">2. What is R vs. RStudio?</h2>
+      <div class="slide-subtitle">The statistical engine vs. the IDE cockpit</div>
+      <div class="slide-body">
+        <div class="grid-2">
+          <div class="panel">
+            <div class="panel-title" style="color: #60a5fa;">R (The Engine)</div>
+            <ul>
+              <li><strong>Language:</strong> Open-source statistical computing language created by Ross Ihaka & Robert Gentleman in 1993.</li>
+              <li><strong>Vectorized:</strong> Math operations naturally loop over datasets at internal C speed.</li>
+              <li><strong>CRAN:</strong> Comprehensive R Archive Network with 20,000+ statistical packages.</li>
+            </ul>
+            <div class="code-box">
+              <span class="code-comment"># Type in console:</span><br/>
+              R.version.string<br/>
+              <span class="code-comment"># [1] "R version 4.4.1 (2024-06-14)"</span>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-title" style="color: #a78bfa;">RStudio (The Cockpit)</div>
+            <ul>
+              <li><strong>IDE:</strong> Developed by Posit (formerly RStudio PBC) to provide a professional user interface.</li>
+              <li><strong>Features:</strong> Source code editor, live workspace object explorer, plot previews, debugger, and Git integration.</li>
+              <li><strong>Reproducibility:</strong> Manages R Projects (<code style="color:#a78bfa;">.Rproj</code>) to avoid broken file paths.</li>
+            </ul>
+            <div class="tip-box" style="margin-top: 14px;">
+              <span>🚗</span>
+              <div><strong>Analogy:</strong> R is the engine under the hood. RStudio is the dashboard, steering wheel, and satellite GPS.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 3 -->
+    <div class="slide-card" data-index="2" data-category="Module 1 • Starter Essentials">
+      <span class="pill pill-starter">Module 1 • Starter</span>
+      <h2 class="slide-title">3. The 4 Quadrants of RStudio</h2>
+      <div class="slide-subtitle">How to navigate the interface like a pro</div>
+      <div class="slide-body">
+        <div class="grid-2">
+          <div class="panel" style="border-left: 4px solid #3b82f6;">
+            <div class="panel-title" style="color: #60a5fa;">1. Top-Left: Source Editor (Ctrl+1)</div>
+            <p>Where you write and save your scripts (<code style="color:#60a5fa;">.R</code>) and Quarto docs (<code style="color:#60a5fa;">.qmd</code>). Code isn't executed until you send it.</p>
+            <div class="code-box"><span class="code-comment"># Press Ctrl+Enter to run:</span><br/>x &lt;- <span class="code-fn">c</span>(<span class="code-num">10</span>, <span class="code-num">20</span>, <span class="code-num">30</span>)</div>
+          </div>
+
+          <div class="panel" style="border-left: 4px solid #a855f7;">
+            <div class="panel-title" style="color: #c084fc;">2. Top-Right: Environment / History (Ctrl+8)</div>
+            <p>Lists all active variables, data tables, and objects in memory. Click any table to open the interactive data spreadsheet viewer.</p>
+            <div class="code-box"><span class="code-comment"># Environment shows:</span><br/>df: 150 obs. of 5 variables</div>
+          </div>
+
+          <div class="panel" style="border-left: 4px solid #10b981;">
+            <div class="panel-title" style="color: #34d399;">3. Bottom-Left: Console & Terminal (Ctrl+2)</div>
+            <p>The interactive prompt (REPL). It displays calculation results, warnings, and messages sent from the source editor.</p>
+            <div class="code-box">&gt; x * <span class="code-num">2</span><br/>[1] 20 40 60</div>
+          </div>
+
+          <div class="panel" style="border-left: 4px solid #f59e0b;">
+            <div class="panel-title" style="color: #fbbf24;">4. Bottom-Right: Files / Plots / Help</div>
+            <p>View your folder structure, preview ggplot figures, browse installed packages, and read documentation using <code style="color:#fbbf24;">?function</code>.</p>
+            <div class="code-box">&gt; ?summary  <span class="code-comment"># Opens help pane</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 4 -->
+    <div class="slide-card" data-index="3" data-category="Module 1 • Starter Essentials">
+      <span class="pill pill-starter">Module 1 • Starter</span>
+      <h2 class="slide-title">4. R Projects (.Rproj) & Working Directories</h2>
+      <div class="slide-subtitle">Why setwd() is dangerous and how .Rproj fixes it</div>
+      <div class="slide-body">
+        <div class="grid-2">
+          <div class="panel" style="border-color: rgba(239, 68, 68, 0.4);">
+            <div class="panel-title" style="color: #f87171;">❌ The Anti-Pattern: Hardcoded Paths</div>
+            <p>Never do this in scripts:</p>
+            <div class="code-box" style="color: #fca5a5;">
+              <span class="code-comment"># Breaks if anyone else runs it!</span><br/>
+              setwd(<span class="code-str">"C:/Users/name/Desktop/project"</span>)<br/>
+              data &lt;- read.csv(<span class="code-str">"C:/data/test.csv"</span>)
+            </div>
+            <p style="margin-top: 10px; font-size: 0.8rem; color: #94a3b8;">
+              If your collaborator runs this, or you move to a new laptop, every path crashes immediately.
+            </p>
+          </div>
+
+          <div class="panel" style="border-color: rgba(16, 185, 129, 0.4);">
+            <div class="panel-title" style="color: #34d399;">✅ The Best Practice: R Projects & the 'here' package</div>
+            <p>Use File → New Project in RStudio:</p>
+            <div class="code-box" style="color: #86efac;">
+              <span class="code-kw">library</span>(here)<br/>
+              <span class="code-comment"># Paths automatically anchor to project root:</span><br/>
+              data &lt;- readr::<span class="code-fn">read_csv</span>(here(<span class="code-str">"data"</span>, <span class="code-str">"raw.csv"</span>))
+            </div>
+            <p style="margin-top: 10px; font-size: 0.8rem; color: #94a3b8;">
+              The <code>.Rproj</code> file acts as a self-contained sandbox. Anyone can clone your repository and run it with 0 modifications.
+            </p>
+          </div>
+        </div>
+        <div class="tip-box">
+          <span>⚡</span>
+          <div><strong>Keyboard Shortcut:</strong> Insert the assignment arrow <code style="color:#fff;">&lt;-</code> with <kbd>Alt</kbd> + <kbd>-</kbd> (Option + - on Mac).</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 5 -->
+    <div class="slide-card" data-index="4" data-category="Module 1 • Starter Essentials">
+      <span class="pill pill-starter">Module 1 • Starter</span>
+      <h2 class="slide-title">5. Core Data Types in R</h2>
+      <div class="slide-subtitle">Numeric, Integer, Character, Logical, and Factors</div>
+      <div class="slide-body">
+        <div class="grid-3">
+          <div class="panel">
+            <div class="panel-title" style="color: #60a5fa;">Numeric & Integer</div>
+            <p>Numeric (doubles) are decimals. Integers end with <code style="color:#60a5fa;">L</code>.</p>
+            <div class="code-box">
+              a &lt;- <span class="code-num">3.14</span>     <span class="code-comment"># numeric</span><br/>
+              b &lt;- <span class="code-num">42L</span>      <span class="code-comment"># integer</span><br/>
+              <span class="code-fn">typeof</span>(a)   <span class="code-comment"># "double"</span>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-title" style="color: #34d399;">Character & Logical</div>
+            <p>Strings use quotes. Booleans are <code style="color:#34d399;">TRUE</code> or <code style="color:#34d399;">FALSE</code>.</p>
+            <div class="code-box">
+              str &lt;- <span class="code-str">"Genomics"</span><br/>
+              flag &lt;- <span class="code-kw">TRUE</span><br/>
+              flag &amp; (<span class="code-num">10</span> &gt; <span class="code-num">5</span>) <span class="code-comment"># TRUE</span>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-title" style="color: #c084fc;">Factors (Categorical)</div>
+            <p>Data with fixed categories and levels.</p>
+            <div class="code-box">
+              size &lt;- <span class="code-fn">factor</span>(<br/>
+              &nbsp;&nbsp;<span class="code-fn">c</span>(<span class="code-str">"S"</span>, <span class="code-str">"L"</span>, <span class="code-str">"M"</span>),<br/>
+              &nbsp;&nbsp;levels = <span class="code-fn">c</span>(<span class="code-str">"S"</span>, <span class="code-str">"M"</span>, <span class="code-str">"L"</span>)<br/>
+              )
+            </div>
+          </div>
+        </div>
+        <div class="panel" style="margin-top: 16px;">
+          <div class="panel-title" style="color: #fbbf24;">Special Missing Values: NA vs NULL</div>
+          <p><strong>NA</strong> stands for <em>Not Available</em> (missing observation). <strong>NULL</strong> means an object does not exist. Always check with <code style="color:#fbbf24;">is.na(x)</code>, never <code style="color:#fbbf24;">x == NA</code>!</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 6 -->
+    <div class="slide-card" data-index="5" data-category="Module 1 • Starter Essentials">
+      <span class="pill pill-starter">Module 1 • Starter</span>
+      <h2 class="slide-title">6. Vectors: 1-Based Indexing & Vectorization</h2>
+      <div class="slide-subtitle">The heart of all operations in R</div>
+      <div class="slide-body">
+        <div class="grid-2">
+          <div>
+            <div class="panel">
+              <div class="panel-title" style="color: #60a5fa;">Atomic Vectors with c()</div>
+              <div class="code-box">
+                <span class="code-comment"># Combine with c():</span><br/>
+                vals &lt;- <span class="code-fn">c</span>(<span class="code-num">10</span>, <span class="code-num">25</span>, <span class="code-num">50</span>, <span class="code-num">75</span>, <span class="code-num">100</span>)<br/><br/>
+                <span class="code-comment"># 1-Based Indexing:</span><br/>
+                vals[<span class="code-num">1</span>]        <span class="code-comment"># 10 (First element!)</span><br/>
+                vals[<span class="code-num">2:4</span>]      <span class="code-comment"># 25, 50, 75</span><br/>
+                vals[-<span class="code-num">1</span>]       <span class="code-comment"># Omits first element</span><br/>
+                vals[vals &gt; <span class="code-num">30</span>] <span class="code-comment"># 50, 75, 100</span>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div class="panel">
+              <div class="panel-title" style="color: #34d399;">Vectorization (No loops needed!)</div>
+              <p>Arithmetic applies to all elements simultaneously at C speed:</p>
+              <div class="code-box">
+                x &lt;- <span class="code-fn">c</span>(<span class="code-num">1</span>, <span class="code-num">2</span>, <span class="code-num">3</span>)<br/>
+                y &lt;- <span class="code-fn">c</span>(<span class="code-num">10</span>, <span class="code-num">20</span>, <span class="code-num">30</span>)<br/><br/>
+                x + <span class="code-num">5</span>     <span class="code-comment"># [1] 6 7 8</span><br/>
+                x * y     <span class="code-comment"># [1] 10 40 90</span><br/>
+                <span class="code-fn">sqrt</span>(y)   <span class="code-comment"># Applied to each number</span>
+              </div>
+            </div>
+            <div class="tip-box" style="margin-top: 10px;">
+              <span>⚠️</span>
+              <div><strong>Type Coercion:</strong> A vector can hold only <em>one</em> data type. <code style="color:#fff;">c(1, "hello")</code> forces both to become strings.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 7 -->
+    <div class="slide-card" data-index="6" data-category="Module 1 • Starter Essentials">
+      <span class="pill pill-starter">Module 1 • Starter</span>
+      <h2 class="slide-title">7. Data Frames and Tibbles</h2>
+      <div class="slide-subtitle">Representing rectangular data in memory</div>
+      <div class="slide-body">
+        <div class="grid-2">
+          <div class="panel">
+            <div class="panel-title" style="color: #60a5fa;">Data Frame: Columns as Equal-Length Vectors</div>
+            <div class="code-box">
+              patients &lt;- <span class="code-fn">data.frame</span>(<br/>
+              &nbsp;&nbsp;id = <span class="code-num">101:103</span>,<br/>
+              &nbsp;&nbsp;age = <span class="code-fn">c</span>(<span class="code-num">45</span>, <span class="code-num">62</span>, <span class="code-num">34</span>),<br/>
+              &nbsp;&nbsp;status = <span class="code-fn">c</span>(<span class="code-str">"Stable"</span>, <span class="code-str">"Severe"</span>, <span class="code-str">"Stable"</span>)<br/>
+              )<br/><br/>
+              <span class="code-comment"># Extract column with $:</span><br/>
+              patients$age  <span class="code-comment"># [1] 45 62 34</span>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-title" style="color: #a78bfa;">Inspecting Data</div>
+            <ul style="margin-bottom: 8px;">
+              <li><code style="color:#a78bfa;">head(df, n)</code>: View first n rows</li>
+              <li><code style="color:#a78bfa;">str(df)</code>: Structure, types, and samples</li>
+              <li><code style="color:#a78bfa;">summary(df)</code>: Min, median, mean, quartiles</li>
+              <li><code style="color:#a78bfa;">dim(df)</code>: [rows, columns] dimensions</li>
+            </ul>
+            <div class="tip-box">
+              <span>💡</span>
+              <div><strong>Tibble:</strong> A modern data frame from the tidyverse that prints cleanly and never truncates text into factors unexpectedly.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 8 -->
+    <div class="slide-card" data-index="7" data-category="Module 2 • Intermediate Data Science">
+      <span class="pill pill-intermediate">Module 2 • Intermediate</span>
+      <h2 class="slide-title">8. The Native Pipe Operator (|&gt;)</h2>
+      <div class="slide-subtitle">Write code that reads naturally from left to right</div>
+      <div class="slide-body">
+        <div class="grid-2">
+          <div class="panel" style="border-color: rgba(239, 68, 68, 0.4);">
+            <div class="panel-title" style="color: #f87171;">Old Style: Nested Function Spaghetti</div>
+            <div class="code-box" style="color: #fca5a5;">
+              <span class="code-comment"># Read from inside out:</span><br/>
+              <span class="code-fn">round</span>(<br/>
+              &nbsp;&nbsp;<span class="code-fn">mean</span>(<br/>
+              &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-fn">filter</span>(df, age &gt; <span class="code-num">30</span>)$salary,<br/>
+              &nbsp;&nbsp;&nbsp;&nbsp;na.rm = <span class="code-kw">TRUE</span><br/>
+              &nbsp;&nbsp;),<br/>
+              &nbsp;&nbsp;<span class="code-num">2</span><br/>
+              )
+            </div>
+          </div>
+
+          <div class="panel" style="border-color: rgba(16, 185, 129, 0.4);">
+            <div class="panel-title" style="color: #34d399;">Modern Style: Native Pipe (|&gt;)</div>
+            <div class="code-box" style="color: #86efac;">
+              <span class="code-comment"># Read top-down ("and then"):</span><br/>
+              df |&gt;<br/>
+              &nbsp;&nbsp;<span class="code-fn">filter</span>(age &gt; <span class="code-num">30</span>) |&gt;<br/>
+              &nbsp;&nbsp;<span class="code-fn">pull</span>(salary) |&gt;<br/>
+              &nbsp;&nbsp;<span class="code-fn">mean</span>(na.rm = <span class="code-kw">TRUE</span>) |&gt;<br/>
+              &nbsp;&nbsp;<span class="code-fn">round</span>(<span class="code-num">2</span>)
+            </div>
+          </div>
+        </div>
+        <div class="tip-box" style="margin-top: 14px;">
+          <span>⚡</span>
+          <div><strong>Keyboard Shortcut:</strong> Press <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>M</kbd> to insert the pipe instantly. (Configure RStudio Options → Code → Use native pipe).</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 9 -->
+    <div class="slide-card" data-index="8" data-category="Module 2 • Intermediate Data Science">
+      <span class="pill pill-intermediate">Module 2 • Intermediate</span>
+      <h2 class="slide-title">9. Data Wrangling with dplyr</h2>
+      <div class="slide-subtitle">The 5 core verbs for 95% of data processing tasks</div>
+      <div class="slide-body">
+        <div class="grid-5" style="margin-bottom: 16px;">
+          <div class="panel">
+            <div class="panel-title" style="color:#60a5fa;">filter()</div>
+            <p>Pick rows</p>
+            <code style="font-size:0.75rem; color:#93c5fd;">filter(age &gt;= 21)</code>
+          </div>
+          <div class="panel">
+            <div class="panel-title" style="color:#818cf8;">select()</div>
+            <p>Pick cols</p>
+            <code style="font-size:0.75rem; color:#a5b4fc;">select(id, score)</code>
+          </div>
+          <div class="panel">
+            <div class="panel-title" style="color:#34d399;">mutate()</div>
+            <p>New cols</p>
+            <code style="font-size:0.75rem; color:#86efac;">mutate(log_p=log(p))</code>
+          </div>
+          <div class="panel">
+            <div class="panel-title" style="color:#fbbf24;">arrange()</div>
+            <p>Sort rows</p>
+            <code style="font-size:0.75rem; color:#fde68a;">arrange(desc(p))</code>
+          </div>
+          <div class="panel">
+            <div class="panel-title" style="color:#c084fc;">summarise()</div>
+            <p>Aggregate</p>
+            <code style="font-size:0.75rem; color:#d8b4fe;">summarise(m=mean(x))</code>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-title" style="color: #fff;">Complete Real-World dplyr Pipeline:</div>
+          <div class="code-box">
+            <span class="code-kw">library</span>(dplyr)<br/><br/>
+            summary_table &lt;- starwars |&gt;<br/>
+            &nbsp;&nbsp;<span class="code-fn">filter</span>(!<span class="code-fn">is.na</span>(height), !<span class="code-fn">is.na</span>(mass)) |&gt;<br/>
+            &nbsp;&nbsp;<span class="code-fn">mutate</span>(bmi = mass / ((height / <span class="code-num">100</span>)^<span class="code-num">2</span>)) |&gt;<br/>
+            &nbsp;&nbsp;<span class="code-fn">group_by</span>(species) |&gt;<br/>
+            &nbsp;&nbsp;<span class="code-fn">summarise</span>(<br/>
+            &nbsp;&nbsp;&nbsp;&nbsp;n = <span class="code-fn">n</span>(),<br/>
+            &nbsp;&nbsp;&nbsp;&nbsp;avg_bmi = <span class="code-fn">mean</span>(bmi),<br/>
+            &nbsp;&nbsp;&nbsp;&nbsp;max_mass = <span class="code-fn">max</span>(mass)<br/>
+            &nbsp;&nbsp;) |&gt;<br/>
+            &nbsp;&nbsp;<span class="code-fn">filter</span>(n &gt;= <span class="code-num">2</span>) |&gt;<br/>
+            &nbsp;&nbsp;<span class="code-fn">arrange</span>(<span class="code-fn">desc</span>(avg_bmi))
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 10 -->
+    <div class="slide-card" data-index="9" data-category="Module 2 • Intermediate Data Science">
+      <span class="pill pill-intermediate">Module 2 • Intermediate</span>
+      <h2 class="slide-title">10. Reshaping Data with tidyr</h2>
+      <div class="slide-subtitle">Pivoting between Wide and Long formats</div>
+      <div class="slide-body">
+        <div class="grid-2">
+          <div class="panel">
+            <div class="panel-title" style="color: #60a5fa;">pivot_longer() • Wide to Long</div>
+            <p>Stacks repeated measurement columns into key-value pairs (essential for plotting with ggplot2):</p>
+            <div class="code-box">
+              <span class="code-comment"># From: id | yr2020 | yr2021 | yr2022</span><br/>
+              long_df &lt;- df |&gt;<br/>
+              &nbsp;&nbsp;<span class="code-fn">pivot_longer</span>(<br/>
+              &nbsp;&nbsp;&nbsp;&nbsp;cols = <span class="code-fn">starts_with</span>(<span class="code-str">"yr"</span>),<br/>
+              &nbsp;&nbsp;&nbsp;&nbsp;names_to = <span class="code-str">"year"</span>,<br/>
+              &nbsp;&nbsp;&nbsp;&nbsp;values_to = <span class="code-str">"revenue"</span><br/>
+              &nbsp;&nbsp;)<br/>
+              <span class="code-comment"># Result: id | year | revenue</span>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-title" style="color: #c084fc;">pivot_wider() • Long to Wide</div>
+            <p>Spreads key-value pairs out into new columns (ideal for presentation tables):</p>
+            <div class="code-box">
+              <span class="code-comment"># From: patient | test_name | result</span><br/>
+              wide_df &lt;- long_df |&gt;<br/>
+              &nbsp;&nbsp;<span class="code-fn">pivot_wider</span>(<br/>
+              &nbsp;&nbsp;&nbsp;&nbsp;names_from = test_name,<br/>
+              &nbsp;&nbsp;&nbsp;&nbsp;values_from = result<br/>
+              &nbsp;&nbsp;)<br/>
+              <span class="code-comment"># Result: patient | glucose | cholesterol</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 11 -->
+    <div class="slide-card" data-index="10" data-category="Module 2 • Intermediate Data Science">
+      <span class="pill pill-intermediate">Module 2 • Intermediate</span>
+      <h2 class="slide-title">11. Data Visualization with ggplot2</h2>
+      <div class="slide-subtitle">The Grammar of Graphics: Constructing figures layer by layer</div>
+      <div class="slide-body">
+        <div class="grid-2">
+          <div class="panel">
+            <div class="panel-title" style="color: #fbbf24;">The 7 Layers of ggplot2</div>
+            <ul>
+              <li><strong>Data:</strong> The data frame (<code style="color:#fbbf24;">ggplot(df)</code>)</li>
+              <li><strong>Aesthetics (aes):</strong> Mapping variables to x, y, color, size</li>
+              <li><strong>Geometries:</strong> Shapes (<code style="color:#fbbf24;">geom_point</code>, <code style="color:#fbbf24;">geom_line</code>, <code style="color:#fbbf24;">geom_boxplot</code>)</li>
+              <li><strong>Scales:</strong> Colors, axis ranges (<code style="color:#fbbf24;">scale_y_log10</code>)</li>
+              <li><strong>Facets:</strong> Small multiples (<code style="color:#fbbf24;">facet_wrap(~ group)</code>)</li>
+              <li><strong>Themes:</strong> Overall styling (<code style="color:#fbbf24;">theme_minimal()</code>)</li>
+            </ul>
+          </div>
+
+          <div class="panel">
+            <div class="panel-title" style="color: #38bdf8;">Production-Ready ggplot2 Code</div>
+            <div class="code-box">
+              <span class="code-kw">library</span>(ggplot2)<br/><br/>
+              <span class="code-fn">ggplot</span>(mpg, <span class="code-fn">aes</span>(x = displ, y = hwy, color = class)) +<br/>
+              &nbsp;&nbsp;<span class="code-fn">geom_point</span>(size = <span class="code-num">2.5</span>, alpha = <span class="code-num">0.8</span>) +<br/>
+              &nbsp;&nbsp;<span class="code-fn">geom_smooth</span>(method = <span class="code-str">"lm"</span>, se = <span class="code-kw">FALSE</span>) +<br/>
+              &nbsp;&nbsp;<span class="code-fn">scale_color_viridis_d</span>() +<br/>
+              &nbsp;&nbsp;<span class="code-fn">labs</span>(<br/>
+              &nbsp;&nbsp;&nbsp;&nbsp;title = <span class="code-str">"Fuel Economy by Displacement"</span>,<br/>
+              &nbsp;&nbsp;&nbsp;&nbsp;x = <span class="code-str">"Engine Displacement (L)"</span>,<br/>
+              &nbsp;&nbsp;&nbsp;&nbsp;y = <span class="code-str">"Highway MPG"</span><br/>
+              &nbsp;&nbsp;) +<br/>
+              &nbsp;&nbsp;<span class="code-fn">theme_minimal</span>(base_size = <span class="code-num">12</span>)
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 12 -->
+    <div class="slide-card" data-index="11" data-category="Module 2 • Intermediate Data Science">
+      <span class="pill pill-intermediate">Module 2 • Intermediate</span>
+      <h2 class="slide-title">12. Statistical Modeling & The broom Package</h2>
+      <div class="slide-subtitle">Linear models (lm), generalized models (glm), and tidy outputs</div>
+      <div class="slide-body">
+        <div class="grid-2">
+          <div class="panel">
+            <div class="panel-title" style="color: #60a5fa;">Fitting Regression Models</div>
+            <p>Use formula notation: <code style="color:#60a5fa;">response ~ predictor1 + predictor2</code></p>
+            <div class="code-box">
+              <span class="code-comment"># Multiple Linear Regression:</span><br/>
+              model &lt;- <span class="code-fn">lm</span>(mpg ~ wt + hp + <span class="code-fn">factor</span>(cyl), data = mtcars)<br/><br/>
+              <span class="code-comment"># Logistic Regression (GLM):</span><br/>
+              logit &lt;- <span class="code-fn">glm</span>(remission ~ dose, family = binomial, data = trial)
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-title" style="color: #34d399;">Tidying with the broom Package</div>
+            <p>Turn raw model prints into standard tibbles:</p>
+            <div class="code-box">
+              <span class="code-kw">library</span>(broom)<br/><br/>
+              <span class="code-fn">tidy</span>(model)   <span class="code-comment"># Estimates, std.errors & p-values</span><br/>
+              <span class="code-fn">glance</span>(model) <span class="code-comment"># R^2, AIC, BIC, F-statistic</span><br/>
+              <span class="code-fn">augment</span>(model)<span class="code-comment"># Adds fitted values & residuals</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 13 -->
+    <div class="slide-card" data-index="12" data-category="Module 3 • Advanced R & Production">
+      <span class="pill pill-advanced">Module 3 • Advanced</span>
+      <h2 class="slide-title">13. Functional Programming with purrr</h2>
+      <div class="slide-subtitle">Type-safe map functions replace brittle loops</div>
+      <div class="slide-body">
+        <div class="grid-2">
+          <div class="panel">
+            <div class="panel-title" style="color: #f87171;">Why replace for loops?</div>
+            <p>Loops in data analysis require setting up empty containers, tracking indices, and are vulnerable to off-by-one errors.</p>
+            <div class="tip-box" style="margin-top: 14px;">
+              <span>🎯</span>
+              <div><strong>purrr::map_*()</strong> guarantees the exact return type or raises an informative error immediately.</div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-title" style="color: #a78bfa;">The purrr Toolkit</div>
+            <div class="code-box">
+              <span class="code-kw">library</span>(purrr)<br/><br/>
+              <span class="code-comment"># Read & bind 100 CSVs into 1 table in one line:</span><br/>
+              combined &lt;- files |&gt; <span class="code-fn">map_dfr</span>(readr::read_csv)<br/><br/>
+              <span class="code-comment"># Type-specific vector mapping:</span><br/>
+              <span class="code-fn">map_dbl</span>(mtcars, mean) <span class="code-comment"># Returns numeric vector</span><br/>
+              <span class="code-fn">map_chr</span>(df, class)    <span class="code-comment"># Returns character vector</span><br/>
+              <span class="code-fn">map_lgl</span>(df, anyNA)    <span class="code-comment"># Returns TRUE / FALSE vector</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 14 -->
+    <div class="slide-card" data-index="13" data-category="Module 3 • Advanced R & Production">
+      <span class="pill pill-advanced">Module 3 • Advanced</span>
+      <h2 class="slide-title">14. High Performance R: data.table</h2>
+      <div class="slide-subtitle">Blazing fast calculations on tens of millions of rows</div>
+      <div class="slide-body">
+        <div class="grid-2">
+          <div class="panel">
+            <div class="panel-title" style="color: #60a5fa;">The DT[i, j, by] Syntax</div>
+            <p>Pronounce as: "Take DT, filter rows with <strong>i</strong>, calculate <strong>j</strong>, grouped by <strong>by</strong>":</p>
+            <div class="code-box">
+              <span class="code-kw">library</span>(data.table)<br/>
+              DT &lt;- <span class="code-fn">as.data.table</span>(flights)<br/><br/>
+              <span class="code-comment"># Ultra-fast aggregation:</span><br/>
+              DT[dest == <span class="code-str">"JFK"</span>,<br/>
+              &nbsp;&nbsp;&nbsp;.(avg_delay = <span class="code-fn">mean</span>(arr_delay, na.rm = <span class="code-kw">TRUE</span>), count = .N),<br/>
+              &nbsp;&nbsp;&nbsp;by = .(carrier, origin)]
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-title" style="color: #34d399;">Zero-Copy In-Place Updates (:=)</div>
+            <p>Standard R copies data on modify. <code style="color:#34d399;">:=</code> updates in place with 0 memory duplication:</p>
+            <div class="code-box">
+              <span class="code-comment"># Instant new column without duplicating memory:</span><br/>
+              DT[, speed_mph := (distance / air_time) * <span class="code-num">60</span>]<br/><br/>
+              <span class="code-comment"># Multi-threaded file reading:</span><br/>
+              big_df &lt;- <span class="code-fn">fread</span>(<span class="code-str">"10GB_dataset.csv"</span>, nThread = <span class="code-num">8</span>)
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 15 -->
+    <div class="slide-card" data-index="14" data-category="Module 3 • Advanced R & Production">
+      <span class="pill pill-advanced">Module 3 • Advanced</span>
+      <h2 class="slide-title">15. Metaprogramming & C++ with Rcpp</h2>
+      <div class="slide-subtitle">Under the hood of the language and compiling machine code</div>
+      <div class="slide-body">
+        <div class="grid-2">
+          <div class="panel">
+            <div class="panel-title" style="color: #a78bfa;">Tidy Evaluation: The Embrace {{ }}</div>
+            <p>Write reusable custom functions accepting bare column names:</p>
+            <div class="code-box">
+              <span class="code-kw">library</span>(rlang)<br/><br/>
+              my_summary &lt;- <span class="code-kw">function</span>(df, group_col, num_col) {<br/>
+              &nbsp;&nbsp;df |&gt;<br/>
+              &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-fn">group_by</span>({{ group_col }}) |&gt;<br/>
+              &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-fn">summarise</span>(mean = <span class="code-fn">mean</span>({{ num_col }}, na.rm = <span class="code-kw">TRUE</span>))<br/>
+              }<br/><br/>
+              my_summary(mtcars, cyl, mpg)
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-title" style="color: #fbbf24;">C++ Acceleration with Rcpp</div>
+            <p>Embed compiled C++ directly into your R sessions:</p>
+            <div class="code-box">
+              <span class="code-kw">library</span>(Rcpp)<br/><br/>
+              <span class="code-fn">cppFunction</span>(<span class="code-str">'<br/>
+              int fibonacci(int n) {<br/>
+              &nbsp;&nbsp;if (n &lt;= 1) return n;<br/>
+              &nbsp;&nbsp;return fibonacci(n - 1) + fibonacci(n - 2);<br/>
+              }<br/>
+              '</span>)<br/><br/>
+              fibonacci(<span class="code-num">30</span>) <span class="code-comment"># Native compiled speed!</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 16 -->
+    <div class="slide-card" data-index="15" data-category="Module 3 • Advanced R & Production">
+      <span class="pill pill-advanced">Module 3 • Advanced</span>
+      <h2 class="slide-title">16. Reproducible Publishing: Quarto (.qmd)</h2>
+      <div class="slide-subtitle">The next-generation scientific publishing engine</div>
+      <div class="slide-body">
+        <div class="grid-2">
+          <div class="panel">
+            <div class="panel-title" style="color: #60a5fa;">Why Quarto?</div>
+            <p>Quarto weaves prose, code, and live outputs into professional documents:</p>
+            <ul>
+              <li><strong>Multi-Format:</strong> Export to HTML, PDF (LaTeX), Word, slides (reveal.js), or interactive dashboards.</li>
+              <li><strong>Multi-Language:</strong> Execute R, Python, and SQL chunks in the same document.</li>
+              <li><strong>Plain text:</strong> Fully version-controllable with Git.</li>
+            </ul>
+          </div>
+
+          <div class="panel">
+            <div class="panel-title" style="color: #fff;">Example Document (.qmd):</div>
+            <div class="code-box">
+              ---<br/>
+              title: "Clinical Analysis Report"<br/>
+              format: html<br/>
+              execute:<br/>
+              &nbsp;&nbsp;echo: true<br/>
+              ---<br/><br/>
+              ## Results<br/>
+              ```r<br/>
+              library(ggplot2)<br/>
+              ggplot(iris, aes(Sepal.Length, Petal.Length)) +<br/>
+              &nbsp;&nbsp;geom_point(aes(color = Species))<br/>
+              ```
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 17 -->
+    <div class="slide-card" data-index="16" data-category="Module 3 • Advanced R & Production">
+      <span class="pill pill-advanced">Module 3 • Advanced</span>
+      <h2 class="slide-title">17. Interactive Web Apps with Shiny & Packages</h2>
+      <div class="slide-subtitle">Production deployment: From script to web app and software package</div>
+      <div class="slide-body">
+        <div class="grid-2">
+          <div class="panel">
+            <div class="panel-title" style="color: #38bdf8;">1. Interactive Dashboards with Shiny</div>
+            <p>Create reactive web applications without HTML/JS:</p>
+            <div class="code-box">
+              <span class="code-kw">library</span>(shiny)<br/><br/>
+              ui &lt;- <span class="code-fn">fluidPage</span>(<br/>
+              &nbsp;&nbsp;<span class="code-fn">selectInput</span>(<span class="code-str">"v"</span>, <span class="code-str">"Col"</span>, <span class="code-fn">names</span>(mtcars)),<br/>
+              &nbsp;&nbsp;<span class="code-fn">plotOutput</span>(<span class="code-str">"plt"</span>)<br/>
+              )<br/>
+              server &lt;- <span class="code-kw">function</span>(input, output) {<br/>
+              &nbsp;&nbsp;output$plt &lt;- <span class="code-fn">renderPlot</span>({<br/>
+              &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-fn">hist</span>(mtcars[[input$v]])<br/>
+              &nbsp;&nbsp;})<br/>
+              }<br/>
+              <span class="code-fn">shinyApp</span>(ui, server)
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-title" style="color: #34d399;">2. R Package Development</div>
+            <p>Turn your helper functions into an installable library:</p>
+            <div class="code-box">
+              <span class="code-kw">library</span>(usethis)<br/>
+              <span class="code-kw">library</span>(devtools)<br/><br/>
+              <span class="code-fn">create_package</span>(<span class="code-str">"mypkg"</span>)<br/>
+              <span class="code-fn">use_r</span>(<span class="code-str">"clean_data"</span>)<br/>
+              <span class="code-fn">use_mit_license</span>()<br/>
+              <span class="code-fn">use_testthat</span>()<br/>
+              <span class="code-fn">check</span>() <span class="code-comment"># Automated CRAN checks</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 18 -->
+    <div class="slide-card" data-index="17" data-category="Conclusion & Knowledge Check">
+      <span class="pill pill-summary">Conclusion</span>
+      <h2 class="slide-title">18. Summary & Next Steps Checklist</h2>
+      <div class="slide-subtitle">Key takeaways to remember every day</div>
+      <div class="slide-body">
+        <div class="grid-3">
+          <div class="panel">
+            <div class="panel-title" style="color: #34d399;">Daily Starter Habits</div>
+            <ul>
+              <li>✓ Always launch via <strong>.Rproj</strong></li>
+              <li>✓ Use <strong>&lt;-</strong> for variables</li>
+              <li>✓ Use <strong>str()</strong> & <strong>head()</strong> often</li>
+              <li>✓ Remember 1-based indexing</li>
+            </ul>
+          </div>
+
+          <div class="panel">
+            <div class="panel-title" style="color: #60a5fa;">Intermediate Standard</div>
+            <ul>
+              <li>✓ Chain logic with <strong>|&gt;</strong></li>
+              <li>✓ 5 core <strong>dplyr</strong> verbs</li>
+              <li>✓ Pivot with <strong>tidyr</strong></li>
+              <li>✓ Layer plots with <strong>ggplot2</strong></li>
+            </ul>
+          </div>
+
+          <div class="panel">
+            <div class="panel-title" style="color: #a78bfa;">Advanced Toolkit</div>
+            <ul>
+              <li>✓ <strong>purrr</strong> for loop-free mapping</li>
+              <li>✓ <strong>data.table</strong> for big data</li>
+              <li>✓ Lock packages with <strong>renv</strong></li>
+              <li>✓ Reports with <strong>Quarto</strong></li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Interactive Quiz Section -->
+        <div class="panel" style="margin-top: 16px; border-color: rgba(99, 102, 241, 0.4); text-align: center;">
+          <div class="panel-title" style="color: #a5b4fc; justify-content: center; font-size: 1rem;">
+            🎯 Quick Knowledge Check
+          </div>
+          <p style="font-size: 0.85rem; margin-bottom: 12px; color: #cbd5e1;">
+            Test yourself right now with 3 quick questions:
+          </p>
+          <div style="max-width: 600px; margin: 0 auto; text-align: left;">
+            <div style="background: rgba(0,0,0,0.3); padding: 12px; border-radius: 8px; margin-bottom: 8px;">
+              <p style="font-weight: 600; margin-bottom: 6px;">1. What is the index of the first element in an R vector?</p>
+              <div style="display:flex; gap: 8px;">
+                <button onclick="answerQuiz(this, false)">A) 0</button>
+                <button onclick="answerQuiz(this, true)">B) 1 (R is 1-indexed)</button>
+                <button onclick="answerQuiz(this, false)">C) -1</button>
+              </div>
+            </div>
+            <div style="background: rgba(0,0,0,0.3); padding: 12px; border-radius: 8px; margin-bottom: 8px;">
+              <p style="font-weight: 600; margin-bottom: 6px;">2. Which dplyr verb is used to add new calculated columns?</p>
+              <div style="display:flex; gap: 8px;">
+                <button onclick="answerQuiz(this, false)">A) select()</button>
+                <button onclick="answerQuiz(this, true)">B) mutate()</button>
+                <button onclick="answerQuiz(this, false)">C) filter()</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="shortcuts-help hide-in-scroll">
+      <span><kbd>←</kbd> <kbd>→</kbd> Navigate</span>
+      <span><kbd>Space</kbd> Next</span>
+      <span><kbd>Esc</kbd> Index</span>
+    </div>
+    <div id="footerCategory" style="font-weight: 600; color: #60a5fa;">
+      Module 1 • Starter Essentials
+    </div>
+  </footer>
+
+  <!-- TABLE OF CONTENTS MODAL -->
+  <div class="modal-backdrop" id="modalBackdrop" onclick="handleBackdropClick(event)">
+    <div class="modal" id="modalContent">
+      <div class="modal-header">
+        <h3 style="font-size: 1rem; font-weight: 700;">Table of Contents</h3>
+        <button onclick="closeModal()" style="padding: 4px 10px;">✕</button>
+      </div>
+      <div class="modal-body" id="tocList"></div>
+    </div>
+  </div>
+
+  <script>
+    let currentSlide = 0;
+    let isScrollMode = false;
+    const slides = Array.from(document.querySelectorAll('.slide-card'));
+
+    function showSlide(index) {
+      if (index < 0 || index >= slides.length) return;
+      currentSlide = index;
+
+      slides.forEach((slide, idx) => {
+        slide.classList.toggle('active', idx === index);
+      });
+
+      document.getElementById('slideNum').textContent = (currentSlide + 1) + ' / ' + slides.length;
+      document.getElementById('progressFill').style.width = (((currentSlide + 1) / slides.length) * 100) + '%';
+      document.getElementById('prevBtn').disabled = (currentSlide === 0);
+      document.getElementById('nextBtn').disabled = (currentSlide === slides.length - 1);
+      
+      const category = slides[currentSlide].getAttribute('data-category') || '';
+      document.getElementById('footerCategory').textContent = category;
+    }
+
+    function nextSlide() {
+      if (currentSlide < slides.length - 1) {
+        showSlide(currentSlide + 1);
+      }
+    }
+
+    function prevSlide() {
+      if (currentSlide > 0) {
+        showSlide(currentSlide - 1);
+      }
+    }
+
+    function goToSlide(index) {
+      if (isScrollMode) {
+        toggleViewMode();
+      }
+      showSlide(index);
+      closeModal();
+    }
+
+    function toggleViewMode() {
+      isScrollMode = !isScrollMode;
+      document.body.classList.toggle('scroll-mode', isScrollMode);
+      document.getElementById('viewModeText').textContent = isScrollMode ? 'Slides View' : 'Scroll View';
+      if (!isScrollMode) {
+        showSlide(currentSlide);
+      }
+    }
+
+    function openModal() {
+      document.getElementById('modalBackdrop').classList.add('active');
+    }
+
+    function closeModal() {
+      document.getElementById('modalBackdrop').classList.remove('active');
+    }
+
+    function handleBackdropClick(e) {
+      if (e.target.id === 'modalBackdrop') {
+        closeModal();
+      }
+    }
+
+    // Populate TOC
+    const tocContainer = document.getElementById('tocList');
+    slides.forEach((slide, i) => {
+      const title = slide.querySelector('.slide-title').textContent;
+      const subtitle = slide.querySelector('.slide-subtitle').textContent;
+      const pill = slide.querySelector('.pill');
+      const item = document.createElement('div');
+      item.className = 'toc-item';
+      item.onclick = function() { goToSlide(i); };
+      item.innerHTML = `
+        <div>
+          <strong style="color: #fff; font-size: 0.85rem;">${title}</strong>
+          <div style="font-size: 0.75rem; color: #94a3b8;">${subtitle}</div>
+        </div>
+        <span class="${pill.className}" style="margin: 0; font-size: 0.65rem;">${pill.textContent}</span>
+      `;
+      tocContainer.appendChild(item);
+    });
+
+    // Keyboard Shortcuts
+    window.addEventListener('keydown', (e) => {
+      const modal = document.getElementById('modalBackdrop');
+      if (modal.classList.contains('active')) {
+        if (e.key === 'Escape') closeModal();
+        return;
+      }
+
+      if (!isScrollMode) {
+        if (e.key === 'ArrowRight' || e.key === ' ') {
+          e.preventDefault();
+          nextSlide();
+        } else if (e.key === 'ArrowLeft') {
+          e.preventDefault();
+          prevSlide();
+        } else if (e.key === 'Escape') {
+          openModal();
+        }
+      }
+    });
+
+    // Quiz logic
+    window.answerQuiz = function(btn, isCorrect) {
+      if (isCorrect) {
+        btn.style.background = '#059669';
+        btn.style.borderColor = '#10b981';
+        btn.style.color = '#fff';
+        btn.innerHTML += ' ✓ Correct!';
+      } else {
+        btn.style.background = '#dc2626';
+        btn.style.borderColor = '#ef4444';
+        btn.style.color = '#fff';
+        btn.innerHTML += ' ✗';
+      }
+      btn.disabled = true;
+    };
+
+    // Initialize
+    showSlide(0);
+  </script>
+</body>
+</html>
